@@ -21,4 +21,3 @@ e3 = Omics.Table.rea(joinpath(da, "GSE69428.tsv"), )
 # ---- #
 
 ex = innerjoin(e1, e2, e3; on = "gene_symbol")
-
