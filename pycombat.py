@@ -38,9 +38,9 @@ df_expression = pd.concat([dataset_1, dataset_2, dataset_3], join="inner", axis=
 
 # ---- #
 
-#plt.boxplot(df_expression)
-#
-#plt.show()
+plt.boxplot(df_expression)
+
+plt.show()
 
 # ---- #
 
@@ -51,10 +51,11 @@ df_corrected = inmoose.pycombat.pycombat_norm(
         for j, ds in enumerate([dataset_1, dataset_2, dataset_3])
         for _ in range(len(ds.columns))
     ],
+    par_prior=False,
 )
 
 # ---- #
 
-#plt.boxplot(df_corrected)
-#
-#plt.show()
+plt.boxplot(df_corrected)
+
+plt.show()
