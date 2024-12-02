@@ -59,28 +59,58 @@ me_ = Vector{Float64}(undef, uf)
 
 va_ = Vector{Float64}(undef, uf)
 
+st_ = deepcopy(ma_)
+
 for ie in 1:uf
+
+    me = 0.0
+
+    va = 0.0
 
     for id in 1:ud
 
         nu_ = ma_[id][ie, :]
 
-        ua = us_[id]
+        u1 = us_[id]
 
-        me = sum(nu_) / ua
+        m1 = sum(nu_) / u1
 
-        me_[ie] += me * ua / us
+        v1 = sum(nu -> (nu - m1)^2, nu_)
 
-        va_[ie] += sum(nu -> (nu - me)^2, nu_) / us
+        me += m1 * u1 / us
+
+        va += v1 / us
+
+    end
+
+    me_[ie] = me
+
+    va_[ie] = va
+
+    for id in 1:ud
+
+        st = st_[id]
+
+        for is in 1:us_[id]
+
+            st[ie, is] = (st[ie, is] - me) / sqrt(va)
+
+        end
 
     end
 
 end
 
-@test isapprox(me_[1:3], [4.73804444, 5.95952282, 3.85754567])
+@test isapprox(
+    me_[vcat(1:3, (end - 2):end)],
+    [4.73804444, 5.95952282, 3.85754567, 8.1264884, 7.05907568, 8.35037346],
+)
 
-@test isapprox(va_[1:3], [0.16001282, 0.20522794, 0.74683924])
+@test isapprox(
+    va_[vcat(1:3, (end - 2):end)],
+    [0.16001282, 0.20522794, 0.74683924, 0.44558136, 0.44762729, 0.67700222],
+)
 
-# ---- #
+@test isapprox(st_[1][1, 1:3], [-1.49485243, -0.37141835, -0.52958901])
 
-me_
+@test isapprox(st_[end][end, (end - 2):end], [0.7445448, 0.25915602, 0.32268557])
