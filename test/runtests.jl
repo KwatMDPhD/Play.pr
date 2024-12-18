@@ -21,7 +21,7 @@ ud = lastindex(ts_)
 
 fe___ = Vector{Vector{String}}(undef, ud)
 
-us_ = Vector{Int}(undef, ud)
+us_ = Vector{UInt}(undef, ud)
 
 ma_ = Vector{Matrix{Float64}}(undef, ud)
 
