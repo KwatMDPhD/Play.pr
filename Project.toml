@@ -1,13 +1,10 @@
-name = "DataIntegration"
-uuid = "2da7ecdf-76f4-41d6-a72a-f84de53b33fe"
+name = "Play"
+uuid = "5e33c8db-8ea0-4ae9-a185-dc7fa9883fbb"
 authors = ["KwatMDPhD"]
 version = "0.1.0"
 
 [deps]
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-Omics = "55404059-57b2-473d-9cce-582834f19b54"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-DataFrames = "1.7.0"
 Test = "1.11.0"
