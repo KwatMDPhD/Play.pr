@@ -2,8 +2,3 @@ name = "Play"
 uuid = "5e33c8db-8ea0-4ae9-a185-dc7fa9883fbb"
 authors = ["KwatMDPhD"]
 version = "0.1.0"
-
-[deps]
-Omics = "55404059-57b2-473d-9cce-582834f19b54"
-
-[compat]

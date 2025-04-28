@@ -1,85 +1,81 @@
-using DataFrames
-
-using Omics
+using Nucleus
 
 using Play
 
 # ---- #
 
-ts_ = Tuple(
-    pkgdir(DataIntegration, "data", ts) for
-    ts in ("GSE18520.tsv", "GSE66957.tsv", "GSE69428.tsv")
-)
+ts_ =
+    Tuple(joinpath(Play.IN, ba) for ba in ("GSE18520.tsv", "GSE66957.tsv", "GSE69428.tsv"))
 
 # ---- #
 
-ud = lastindex(ts_)
+u1 = lastindex(ts_)
 
-fe___ = Vector{Vector{String}}(undef, ud)
+st__ = Vector{Vector{String}}(undef, u1)
 
-us_ = Vector{Int}(undef, ud)
+um_ = Vector{Int}(undef, u1)
 
-ma_ = Vector{Matrix{Float64}}(undef, ud)
+F_ = Vector{Matrix{Float64}}(undef, u1)
 
-for id in 1:ud
+for id in 1:u1
 
-    da = Omics.Table.rea(ts_[id])
+    A = Nucleus.Table.rea(ts_[id])
 
-    fe___[id] = da[!, 1]
+    st__[id] = A[!, 1]
 
-    us_[id] = size(da, 2) - 1
+    um_[id] = size(A, 2) - 1
 
-    ma_[id] = Matrix(da[!, 2:end])
+    F_[id] = Matrix(A[!, 2:end])
 
 end
 
-us = sum(us_)
+u3 = sum(um_)
 
 # ---- #
 
-fe_ = intersect(fe___...)
+fe_ = reduce(intersect, st__)
 
-uf = lastindex(fe_)
+u2 = lastindex(fe_)
 
 # ---- #
 
-for id in 1:ud
+for id in 1:u1
 
-    ma_[id] = ma_[id][indexin(fe_, fe___[id]), :]
+    F_[id] = F_[id][indexin(fe_, st__[id]), :]
 
 end
 
 # ---- #
 
-me_ = Vector{Float64}(undef, uf)
+me_ = Vector{Float64}(undef, u2)
 
 va_ = similar(me_)
 
-st_ = map(similar, ma_)
+st_ = map(similar, F_)
 
-ga = Matrix{Float64}(undef, uf, ud)
+ga = Matrix{Float64}(undef, u2, u1)
 
 de = similar(ga)
 
-for ie in 1:uf
+for ie in 1:u2
 
     me = 0.0
 
     va = 0.0
 
-    for id in 1:ud
+    for id in 1:u1
 
-        nu_ = ma_[id][ie, :]
+        nu_ = F_[id][ie, :]
 
-        u1 = us_[id]
+        u1 = um_[id]
 
         m1 = sum(nu_) / u1
 
         v1 = sum(nu -> (nu - m1)^2, nu_)
 
-        me += m1 * u1 / us
+        me += m1 * u1 / u3
 
-        va += v1 / us
+        va += v1 / u3
 
     end
 
@@ -87,13 +83,13 @@ for ie in 1:uf
 
     va_[ie] = va
 
-    for id in 1:ud
+    for id in 1:u1
 
-        ma = ma_[id]
+        ma = F_[id]
 
         st = st_[id]
 
-        ua = us_[id]
+        ua = um_[id]
 
         for is in 1:ua
 
@@ -177,7 +173,7 @@ p2_ = map((dm, dv) -> (dm^3 + dm * dv) / dv, dm_, dv_)
 
 # ---- #
 
-for id in 1:ud
+for id in 1:u1
 
     sa_ = st_[id]
 
@@ -189,7 +185,7 @@ for id in 1:ud
 
     ds_ = Float64[]
 
-    for ie in 1:uf
+    for ie in 1:u2
 
     end
 
