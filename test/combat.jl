@@ -36,23 +36,31 @@ end
 
 const ST_ = intersect(ST__...)
 
+const U1 = lastindex(ST_)
+
+@test U1 === 17126
+
 for id in 1:U3
 
     N_[id] = N_[id][indexin(ST_, ST__[id]), :]
 
 end
 
+@test UM_ == [63, 69, 29]
+
 # ---- #
 
-const U1 = lastindex(ST_)
-
+# Global mean
 const ME_ = Vector{Float64}(undef, U1)
 
+# Global variance
 const VA_ = similar(ME_)
 
-const S_ = map(similar, N_)
+const Z_ = map(similar, N_)
 
 const PR = inv(sum(UM_))
+
+@test PR === 0.006211180124223602
 
 const M = Matrix{Float64}(undef, U1, U3)
 
@@ -60,7 +68,7 @@ const V = similar(M)
 
 for i1 in 1:U1
 
-    m1 = v1 = 0
+    su = va = 0
 
     for i3 in 1:U3
 
@@ -68,39 +76,37 @@ for i1 in 1:U1
 
         um = UM_[i3]
 
-        m2 = sum(nu_) / um
+        me = sum(nu_) / um
 
-        v2 = sum(nu -> (nu - m2)^2, nu_)
+        su += me * um
 
-        m1 += m2 * um
-
-        v1 += v2
+        va += sum(nu -> (nu - me)^2, nu_)
 
     end
 
-    ME_[i1] = m1 *= PR
+    ME_[i1] = su *= PR
 
-    VA_[i1] = v1 *= PR
+    VA_[i1] = va *= PR
 
     for i3 in 1:U3
 
         N = N_[i3]
 
-        S = S_[i3]
+        Z = Z_[i3]
 
         um = UM_[i3]
 
         for i2 in 1:um
 
-            S[i1, i2] = (N[i1, i2] - m1) / sqrt(v1)
+            Z[i1, i2] = (N[i1, i2] - su) / sqrt(va)
 
         end
 
-        st_ = S[i1, :]
+        zs_ = Z[i1, :]
 
-        M[i1, i3] = sum(st_) / um
+        M[i1, i3] = sum(zs_) / um
 
-        V[i1, i3] = var(st_; corrected = false)
+        V[i1, i3] = var(zs_; corrected = false)
 
     end
 
@@ -120,9 +126,9 @@ const IN_ = vcat(1:3, (U1 - 2):U1)
     [0.16001282, 0.20522794, 0.74683924, 0.44558136, 0.44762729, 0.67700222],
 )
 
-@test isapprox(S_[1][1, 1:3], [-1.49485243, -0.37141835, -0.52958901])
+@test isapprox(Z_[1][1, 1:3], [-1.49485243, -0.37141835, -0.52958901])
 
-@test isapprox(S_[end][end, (end - 2):end], [0.7445448, 0.25915602, 0.32268557])
+@test isapprox(Z_[end][end, (end - 2):end], [0.7445448, 0.25915602, 0.32268557])
 
 @test isapprox(
     M[IN_, :],

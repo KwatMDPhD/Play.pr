@@ -1,6 +1,10 @@
 using DataFrames: completecases, disallowmissing!
 
+using Distributions: Binomial
+
 using GLM: StatisticalModel
+
+using Nucleus
 
 using Omics
 
@@ -8,103 +12,98 @@ using Play
 
 # ---- #
 
-const TB = Omics.Table.rea(
-    pkgdir(Omics, "data", "Table", "titanic.tsv");
+const A = Nucleus.Table.rea(
+    pkgdir(Nucleus, "data", "Table", "_.tsv");
     select = ["name", "survived", "sex", "age", "fare"],
     missingstring = "NA",
 )
 
-TB = disallowmissing!(TB[completecases(TB), :])
+A = disallowmissing!(A[completecases(A), :])
 
 # ---- #
 
-const NS = "Passenger"
+const S1 = "Passenger"
 
-const SA_ = TB[!, "name"]
+const S1_ = A[!, "name"]
+
+const U1 = lastindex(S1_)
 
 # ---- #
 
-for na in ("Connolly, Miss. Kate", "Kelly, Mr. James")
+for st in ("Connolly, Miss. Kate", "Kelly, Mr. James")
 
-    SA_[findlast(==(na), SA_)] *= " (2)"
+    S1_[findlast(==(st), S1_)] *= " (2)"
 
 end
 
-@assert allunique(SA_)
+@assert allunique(S1_)
 
 # ---- #
 
-const NT = "Survival"
+const S2 = "Survival"
 
-const TA_ = TB[!, "survived"]
-
-# ---- #
-
-const NF_ = ("Sex", "Age", "Fare")
-
-const DA = stack(
-    (map(se -> se == "female" ? 0 : 1, TB[!, "sex"]), TB[!, "age"], TB[!, "fare"]);
-    dims = 1,
-)
+# TODO: Make Bool.
+const BO_ = A[!, "survived"]
 
 # ---- #
 
-const UF, US = size(DA)
+const S2_ = "Sex", "Age", "Fare"
+
+const NU__ = map(st -> st == "female" ? 0 : 1, A[!, "sex"]), A[!, "age"], A[!, "fare"]
+
+const U2 = lastindex(S2_)
 
 # ---- #
 
-const GL_ = Vector{StatisticalModel}(undef, UF)
+const GL_ = Vector{StatisticalModel}(undef, U2)
 
-for ie in 1:UF
+for i1 in 1:U2
 
-    nf = NF_[ie]
+    st = S2_[i1]
 
-    fe_ = DA[ie, :]
+    nu_ = NU__[i1]
 
-    GL_[ie] = gl = Omics.GeneralizedLinearModel.fit(TA_, fe_)
+    GL_[i1] = gl = Omics.LinearModel.make(nu_, Binomial(), BO_)
 
-    io_ = sortperm(fe_)
+    gr_ = Omics.Grid.make(nu_, U1)
 
-    fe_ = fe_[io_]
+    e1_, e2_, e3_ = Omics.LinearModel.make(gl, gr_)
 
-    Omics.GeneralizedLinearModel.plot(
-        joinpath(p.OU, "titanic.$nf.html"),
-        NS,
-        SA_[io_],
-        NT,
-        TA_[io_],
-        nf,
-        fe_,
-        Omics.GeneralizedLinearModel.predic(gl, range(fe_[1], fe_[end], US))...,
+    Omics.LinearModelPlot.writ(
+        joinpath(Play.OU, "titanic.$st.html"),
+        nu_,
+        BO_,
+        gr_,
+        e1_,
+        e2_,
+        e3_,
+        Dict(
+            "yaxis" => Dict("title" => Dict("text" => S2)),
+            "xaxis" => Dict("title" => Dict("text" => st)),
+        ),
     )
 
 end
 
 # ---- #
 
-const PR = sum(isone, TA_) / lastindex(TA_)
+const PR = sum(isone, BO_) / U1
 
-# ---- #
+# TODO: Avoid Matrix.
+const P = [Omics.LinearModel.make(GL_[i1], NU__[i1][i2])[1] for i1 in 1:U2, i2 in 1:U1]
 
-const PO = stack((
-    map(ie -> Omics.GeneralizedLinearModel.predic(GL_[ie], sa_[ie])[1], 1:UF) for
-    sa_ in eachcol(DA)
-))
+for id in Nucleus.Extreme.index(map(po_ -> Omics.Evidence.make(PR, po_), eachcol(P)), 4)
 
-# ---- #
+    po_ = P[:, id]
 
-for is in Omics.Extreme.get(map(po_ -> Omics.Evidence.ge(PR, po_), eachcol(PO)), 4)
+    for um in 0:U2
 
-    po_ = PO[:, is]
-
-    for uf in 0:UF
-
-        Omics.Evidence.plot(
-            joinpath(Play.OU, "titanic.$is.$uf.html"),
-            SA_[is],
+        Omics.EvidencePlot.writ(
+            joinpath(Play.OU, "titanic.$id.$um.html"),
             PR,
-            map(ie -> "$(NF_[ie]) = $(DA[ie, is])", 1:uf),
-            po_[1:uf],
+            S2_[1:um],
+            po_[1:um];
+            an_ = map(nu_ -> nu_[id], NU__),
         )
 
     end
