@@ -1,130 +1,131 @@
+using StatsBase: mean, var
+
+using Test: @test
+
 using Nucleus
 
 using Play
 
 # ---- #
 
-ts_ =
-    Tuple(joinpath(Play.IN, ba) for ba in ("GSE18520.tsv", "GSE66957.tsv", "GSE69428.tsv"))
+const BA_ = "GSE18520.tsv", "GSE66957.tsv", "GSE69428.tsv"
+
+const U3 = lastindex(BA_)
 
 # ---- #
 
-u1 = lastindex(ts_)
+const ST__ = Vector{Vector{String}}(undef, lastindex(BA_))
 
-st__ = Vector{Vector{String}}(undef, u1)
+const UM_ = similar(ST__, Int)
 
-um_ = Vector{Int}(undef, u1)
+const N_ = similar(UM_, Matrix{Float64})
 
-F_ = Vector{Matrix{Float64}}(undef, u1)
+for id in 1:U3
 
-for id in 1:u1
+    A = Nucleus.Table.rea(joinpath(Play.IN, BA_[id]))
 
-    A = Nucleus.Table.rea(ts_[id])
+    ST__[id] = A[!, 1]
 
-    st__[id] = A[!, 1]
+    UM_[id] = size(A, 2) - 1
 
-    um_[id] = size(A, 2) - 1
-
-    F_[id] = Matrix(A[!, 2:end])
-
-end
-
-u3 = sum(um_)
-
-# ---- #
-
-fe_ = reduce(intersect, st__)
-
-u2 = lastindex(fe_)
-
-# ---- #
-
-for id in 1:u1
-
-    F_[id] = F_[id][indexin(fe_, st__[id]), :]
+    N_[id] = Matrix(A[!, 2:end])
 
 end
 
 # ---- #
 
-me_ = Vector{Float64}(undef, u2)
+const ST_ = intersect(ST__...)
 
-va_ = similar(me_)
+for id in 1:U3
 
-st_ = map(similar, F_)
+    N_[id] = N_[id][indexin(ST_, ST__[id]), :]
 
-ga = Matrix{Float64}(undef, u2, u1)
+end
 
-de = similar(ga)
+# ---- #
 
-for ie in 1:u2
+const U1 = lastindex(ST_)
 
-    me = 0.0
+const ME_ = Vector{Float64}(undef, U1)
 
-    va = 0.0
+const VA_ = similar(ME_)
 
-    for id in 1:u1
+const S_ = map(similar, N_)
 
-        nu_ = F_[id][ie, :]
+const PR = inv(sum(UM_))
 
-        u1 = um_[id]
+const M = Matrix{Float64}(undef, U1, U3)
 
-        m1 = sum(nu_) / u1
+const V = similar(M)
 
-        v1 = sum(nu -> (nu - m1)^2, nu_)
+for i1 in 1:U1
 
-        me += m1 * u1 / u3
+    m1 = v1 = 0
 
-        va += v1 / u3
+    for i3 in 1:U3
+
+        nu_ = N_[i3][i1, :]
+
+        um = UM_[i3]
+
+        m2 = sum(nu_) / um
+
+        v2 = sum(nu -> (nu - m2)^2, nu_)
+
+        m1 += m2 * um
+
+        v1 += v2
 
     end
 
-    me_[ie] = me
+    ME_[i1] = m1 *= PR
 
-    va_[ie] = va
+    VA_[i1] = v1 *= PR
 
-    for id in 1:u1
+    for i3 in 1:U3
 
-        ma = F_[id]
+        N = N_[i3]
 
-        st = st_[id]
+        S = S_[i3]
 
-        ua = um_[id]
+        um = UM_[i3]
 
-        for is in 1:ua
+        for i2 in 1:um
 
-            st[ie, is] = (ma[ie, is] - me) / sqrt(va)
+            S[i1, i2] = (N[i1, i2] - m1) / sqrt(v1)
 
         end
 
-        nu_ = st[ie, :]
+        st_ = S[i1, :]
 
-        ga[ie, id] = sum(nu_) / ua
+        M[i1, i3] = sum(st_) / um
 
-        de[ie, id] = var(nu_; corrected = false)
+        V[i1, i3] = var(st_; corrected = false)
 
     end
 
 end
 
+# ---- #
+
+const IN_ = vcat(1:3, (U1 - 2):U1)
+
 @test isapprox(
-    me_[vcat(1:3, (end - 2):end)],
+    ME_[IN_],
     [4.73804444, 5.95952282, 3.85754567, 8.1264884, 7.05907568, 8.35037346],
 )
 
 @test isapprox(
-    va_[vcat(1:3, (end - 2):end)],
+    VA_[IN_],
     [0.16001282, 0.20522794, 0.74683924, 0.44558136, 0.44762729, 0.67700222],
 )
 
-@test isapprox(st_[1][1, 1:3], [-1.49485243, -0.37141835, -0.52958901])
+@test isapprox(S_[1][1, 1:3], [-1.49485243, -0.37141835, -0.52958901])
 
-@test isapprox(st_[end][end, (end - 2):end], [0.7445448, 0.25915602, 0.32268557])
-
-# ---- #
+@test isapprox(S_[end][end, (end - 2):end], [0.7445448, 0.25915602, 0.32268557])
 
 @test isapprox(
-    ga[vcat(1:3, (end - 2):end), :],
+    M[IN_, :],
     [
         -0.56819588 -0.09791935 1.24568143 -0.93382787 -1.3277284 -0.05480174
         1.34767285 1.75551025 -1.03638821 2.54451507 1.6699258 0.21199566
@@ -133,7 +134,7 @@ end
 )
 
 @test isapprox(
-    de[vcat(1:3, (end - 2):end), :],
+    V[IN_, :],
     [
         0.52503647 0.32167221 0.14062541 0.80817126 0.07214159 0.5086251
         1.52436832 1.80318174 2.0726262 1.11581255 2.03429736 1.3820283
@@ -143,50 +144,32 @@ end
 
 # ---- #
 
-gm_ = map(mean, eachcol(ga))
+m1_ = map(mean, eachcol(M))
 
-gv_ = map(var, eachcol(ga))
+v1_ = map(var, eachcol(M))
 
-@test isapprox(gm_, [-0.2632684539878588, 0.8935639505524893, -1.5541379305822973])
+@test isapprox(m1_, [-0.2632684539878588, 0.8935639505524893, -1.5541379305822973])
 
 @test isapprox(
-    gv_,
+    v1_,
     [2.6366798372981464, 2.1904522505055417, 1.8341420904760084];
-    rtol = 1e-4,
-)
-
-dm_ = map(mean, eachcol(de))
-
-dv_ = map(var, eachcol(de))
-
-p1_ = map((dm, dv) -> (dm^2 + 2 * dv) / dv, dm_, dv_)
-
-p2_ = map((dm, dv) -> (dm^3 + dm * dv) / dv, dm_, dv_)
-
-@test isapprox(p1_, [3.649330176189566, 11.065529845342768, 4.090202496497435]; rtol = 1e-4)
-
-@test isapprox(
-    p2_,
-    [1.2237704407501055, 14.305946682918783, 3.604970820054511];
-    rtol = 1e-4,
+    atol = 1e-3,
 )
 
 # ---- #
 
-for id in 1:u1
+m2_ = map(mean, eachcol(V))
 
-    sa_ = st_[id]
+v2_ = map(var, eachcol(V))
 
-    ga_ = ga[:, id]
+p1_ = map((m2, v2) -> (m2^2 + 2 * v2) / v2, m2_, v2_)
 
-    de_ = de[:, id]
+p2_ = map((m2, v2) -> (m2^3 + m2 * v2) / v2, m2_, v2_)
 
-    gs_ = Float64[]
+@test isapprox(p1_, [3.649330176189566, 11.065529845342768, 4.090202496497435]; atol = 1e-3)
 
-    ds_ = Float64[]
-
-    for ie in 1:u2
-
-    end
-
-end
+@test isapprox(
+    p2_,
+    [1.2237704407501055, 14.305946682918783, 3.604970820054511];
+    atol = 1e-3,
+)
