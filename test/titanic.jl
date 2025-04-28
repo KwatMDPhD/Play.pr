@@ -42,8 +42,7 @@ end
 
 const S2 = "Survival"
 
-# TODO: Make Bool.
-const BO_ = A[!, "survived"]
+const NU_ = A[!, "survived"]
 
 # ---- #
 
@@ -63,7 +62,7 @@ for i1 in 1:U2
 
     nu_ = NU__[i1]
 
-    GL_[i1] = gl = Omics.LinearModel.make(nu_, Binomial(), BO_)
+    GL_[i1] = gl = Omics.LinearModel.make(nu_, Binomial(), NU_)
 
     gr_ = Omics.Grid.make(nu_, U1)
 
@@ -72,7 +71,7 @@ for i1 in 1:U2
     Omics.LinearModelPlot.writ(
         joinpath(Play.OU, "titanic.$st.html"),
         nu_,
-        BO_,
+        NU_,
         gr_,
         e1_,
         e2_,
@@ -87,9 +86,8 @@ end
 
 # ---- #
 
-const PR = sum(isone, BO_) / U1
+const PR = sum(isone, NU_) / U1
 
-# TODO: Avoid Matrix.
 const P = [Omics.LinearModel.make(GL_[i1], NU__[i1][i2])[1] for i1 in 1:U2, i2 in 1:U1]
 
 for id in Nucleus.Extreme.index(map(po_ -> Omics.Evidence.make(PR, po_), eachcol(P)), 4)
