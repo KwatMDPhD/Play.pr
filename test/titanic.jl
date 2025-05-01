@@ -100,8 +100,7 @@ for id in Nucleus.Extreme.index(map(po_ -> Omics.Evidence.make(PR, po_), eachcol
             joinpath(Play.OU, "titanic.$id.$um.html"),
             PR,
             S2_[1:um],
-            po_[1:um];
-            an_ = map(nu_ -> nu_[id], NU__),
+            po_[1:um],
         )
 
     end
