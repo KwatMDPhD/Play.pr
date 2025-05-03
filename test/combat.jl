@@ -34,7 +34,7 @@ end
 
 # ---- #
 
-const ST_ = intersect(ST__...)
+const ST_ = reduce(intersect, ST__)
 
 const U1 = lastindex(ST_)
 
