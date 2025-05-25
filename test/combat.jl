@@ -1,7 +1,5 @@
 using StatsBase: mean, var
 
-using Test: @test
-
 using Nucleus
 
 using Play
@@ -38,7 +36,7 @@ const ST_ = reduce(intersect, ST__)
 
 const U1 = lastindex(ST_)
 
-@test U1 === 17126
+@assert U1 === 17126
 
 for id in 1:U3
 
@@ -46,7 +44,7 @@ for id in 1:U3
 
 end
 
-@test UM_ == [63, 69, 29]
+@assert UM_ == [63, 69, 29]
 
 # ---- #
 
@@ -60,7 +58,7 @@ const Z_ = map(similar, N_)
 
 const PR = inv(sum(UM_))
 
-@test PR === 0.006211180124223602
+@assert PR === 0.006211180124223602
 
 const M = Matrix{Float64}(undef, U1, U3)
 
@@ -116,21 +114,21 @@ end
 
 const IN_ = vcat(1:3, (U1 - 2):U1)
 
-@test isapprox(
+@assert isapprox(
     ME_[IN_],
     [4.73804444, 5.95952282, 3.85754567, 8.1264884, 7.05907568, 8.35037346],
 )
 
-@test isapprox(
+@assert isapprox(
     VA_[IN_],
     [0.16001282, 0.20522794, 0.74683924, 0.44558136, 0.44762729, 0.67700222],
 )
 
-@test isapprox(Z_[1][1, 1:3], [-1.49485243, -0.37141835, -0.52958901])
+@assert isapprox(Z_[1][1, 1:3], [-1.49485243, -0.37141835, -0.52958901])
 
-@test isapprox(Z_[end][end, (end - 2):end], [0.7445448, 0.25915602, 0.32268557])
+@assert isapprox(Z_[end][end, (end - 2):end], [0.7445448, 0.25915602, 0.32268557])
 
-@test isapprox(
+@assert isapprox(
     M[IN_, :],
     [
         -0.56819588 -0.09791935 1.24568143 -0.93382787 -1.3277284 -0.05480174
@@ -139,7 +137,7 @@ const IN_ = vcat(1:3, (U1 - 2):U1)
     ]',
 )
 
-@test isapprox(
+@assert isapprox(
     V[IN_, :],
     [
         0.52503647 0.32167221 0.14062541 0.80817126 0.07214159 0.5086251
@@ -154,9 +152,9 @@ m1_ = map(mean, eachcol(M))
 
 v1_ = map(var, eachcol(M))
 
-@test isapprox(m1_, [-0.2632684539878588, 0.8935639505524893, -1.5541379305822973])
+@assert isapprox(m1_, [-0.2632684539878588, 0.8935639505524893, -1.5541379305822973])
 
-@test isapprox(
+@assert isapprox(
     v1_,
     [2.6366798372981464, 2.1904522505055417, 1.8341420904760084];
     atol = 1e-3,
@@ -172,9 +170,13 @@ p1_ = map((m2, v2) -> (m2^2 + 2 * v2) / v2, m2_, v2_)
 
 p2_ = map((m2, v2) -> (m2^3 + m2 * v2) / v2, m2_, v2_)
 
-@test isapprox(p1_, [3.649330176189566, 11.065529845342768, 4.090202496497435]; atol = 1e-3)
+@assert isapprox(
+    p1_,
+    [3.649330176189566, 11.065529845342768, 4.090202496497435];
+    atol = 1e-3,
+)
 
-@test isapprox(
+@assert isapprox(
     p2_,
     [1.2237704407501055, 14.305946682918783, 3.604970820054511];
     atol = 1e-3,

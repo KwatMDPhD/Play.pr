@@ -10,11 +10,9 @@ GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 Nucleus = "cd814215-3b54-4e50-ac5e-8a2c7852bc16"
 Omics = "85404059-57b2-473d-9cce-582834f19b16"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 DataFrames = "1.7.0"
 Distributions = "0.25.119"
 GLM = "1.9.0"
 StatsBase = "0.34.4"
-Test = "1.11.0"
