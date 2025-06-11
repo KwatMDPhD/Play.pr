@@ -12,11 +12,11 @@ using Play
 
 # ---- #
 
-const A = Nucleus.Table.rea(
-    pkgdir(Nucleus, "data", "Table", "_.tsv");
-    select = ["name", "survived", "sex", "age", "fare"],
-    missingstring = "NA",
-)
+const A =
+    Nucleus.Table.rea(pkgdir(Nucleus, "data", "Table", "_.tsv"); missingstring = "NA")[
+        !,
+        ["name", "survived", "sex", "age", "fare"],
+    ]
 
 A = disallowmissing!(A[completecases(A), :])
 
@@ -24,7 +24,7 @@ A = disallowmissing!(A[completecases(A), :])
 
 const S1 = "Passenger"
 
-const S1_ = A[!, "name"]
+const S1_ = A[!, 1]
 
 const U1 = lastindex(S1_)
 
@@ -42,13 +42,13 @@ end
 
 const S2 = "Survival"
 
-const NU_ = A[!, "survived"]
+const NU_ = A[!, 2]
 
 # ---- #
 
 const S2_ = "Sex", "Age", "Fare"
 
-const NU__ = map(st -> st == "female" ? 0 : 1, A[!, "sex"]), A[!, "age"], A[!, "fare"]
+const NU__ = map(st -> st == "female" ? 0 : 1, A[!, 3]), A[!, 4], A[!, 5]
 
 const U2 = lastindex(S2_)
 
