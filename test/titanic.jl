@@ -1,5 +1,3 @@
-using DataFrames: completecases, disallowmissing!
-
 using Distributions: Binomial
 
 using GLM: StatisticalModel
@@ -12,13 +10,14 @@ using Play
 
 # ---- #
 
+# TODO: Avoid DataFrame
 const A =
     Nucleus.Table.rea(pkgdir(Nucleus, "data", "Table", "_.tsv"); missingstring = "NA")[
         !,
         ["name", "survived", "sex", "age", "fare"],
     ]
 
-A = disallowmissing!(A[completecases(A), :])
+filter!(an_ -> all(!ismissing, an_), A)
 
 # ---- #
 
@@ -27,8 +26,6 @@ const S1 = "Passenger"
 const S1_ = A[!, 1]
 
 const U1 = lastindex(S1_)
-
-# ---- #
 
 for st in ("Connolly, Miss. Kate", "Kelly, Mr. James")
 
@@ -48,11 +45,18 @@ const NU_ = A[!, 2]
 
 const S2_ = "Sex", "Age", "Fare"
 
-const NU__ = map(st -> st == "female" ? 0 : 1, A[!, 3]), A[!, 4], A[!, 5]
+const NU__ = convert(Vector{Int}, map(st -> if st == "female"
+    0
+elseif st == "male"
+    1
+end, A[!, 3])),
+convert(Vector{Float64}, A[!, 4]),
+convert(Vector{Float64}, A[!, 5])
 
 const U2 = lastindex(S2_)
 
 # ---- #
+# TODO: Use Binary
 
 const GL_ = Vector{StatisticalModel}(undef, U2)
 

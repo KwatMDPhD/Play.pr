@@ -20,13 +20,11 @@ const N_ = similar(UM_, Matrix{Float64})
 
 for id in 1:U3
 
-    A = Nucleus.Table.rea(joinpath(Play.IN, BA_[id]))
+    _, ST__[id], _, N = Nucleus.Table.ge(Nucleus.Table.rea(joinpath(Play.IN, BA_[id])))
 
-    ST__[id] = A[!, 1]
+    UM_[id] = size(N, 2)
 
-    UM_[id] = size(A, 2) - 1
-
-    N_[id] = Matrix(A[!, 2:end])
+    N_[id] = N
 
 end
 

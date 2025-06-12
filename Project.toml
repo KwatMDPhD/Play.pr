@@ -4,7 +4,6 @@ authors = ["KwatMDPhD"]
 version = "0.1.0"
 
 [deps]
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 Nucleus = "cd814215-3b54-4e50-ac5e-8a2c7852bc16"
@@ -12,7 +11,6 @@ Omics = "85404059-57b2-473d-9cce-582834f19b16"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
-DataFrames = "1.7.0"
 Distributions = "0.25.119"
 GLM = "1.9.0"
 StatsBase = "0.34.4"

@@ -2,7 +2,7 @@
 
 julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "c4a88174ef2794eace09a40c633c0043820886d3"
+project_hash = "66deced8492e8052f7ec0cb37da9df039e2e2ef0"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -520,7 +520,7 @@ weakdeps = ["Adapt"]
     OffsetArraysAdaptExt = "Adapt"
 
 [[deps.Omics]]
-deps = ["Clustering", "DataFrames", "Distances", "Distributions", "GLM", "GZip", "JSON", "KernelDensity", "LinearAlgebra", "MultivariateStats", "NMF", "NonNegLeastSquares", "Nucleus", "OrderedCollections", "Random", "Statistics", "StatsBase", "Test"]
+deps = ["Clustering", "Distances", "Distributions", "GLM", "GZip", "JSON", "KernelDensity", "LinearAlgebra", "MultivariateStats", "NMF", "NonNegLeastSquares", "Nucleus", "OrderedCollections", "Random", "Statistics", "StatsBase", "Test"]
 path = "../../jl/Omics.jl"
 uuid = "85404059-57b2-473d-9cce-582834f19b16"
 version = "0.1.0"
