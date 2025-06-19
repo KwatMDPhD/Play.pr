@@ -1,6 +1,6 @@
 using Distributions: Binomial
 
-using GLM: StatisticalModel
+using GLM: StatisticalModel, coef
 
 using Nucleus
 
@@ -81,6 +81,7 @@ for i1 in 1:U2
         e2_,
         e3_,
         Dict(
+            "title" => Dict("text" => coef(gl)[2]),
             "yaxis" => Dict("title" => Dict("text" => S2)),
             "xaxis" => Dict("title" => Dict("text" => st)),
         ),
