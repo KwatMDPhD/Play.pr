@@ -18,13 +18,13 @@ const UM_ = similar(ST__, Int)
 
 const N_ = similar(UM_, Matrix{Float64})
 
-for id in 1:U3
+for nd in 1:U3
 
-    _, ST__[id], _, N = Nucleus.Table.ge(Nucleus.Table.rea(joinpath(Play.IN, BA_[id])))
+    _, ST__[nd], _, N = Nucleus.Table.ge(Nucleus.Table.rea(joinpath(Play.IN, BA_[nd])))
 
-    UM_[id] = size(N, 2)
+    UM_[nd] = size(N, 2)
 
-    N_[id] = N
+    N_[nd] = N
 
 end
 
@@ -36,9 +36,9 @@ const U1 = lastindex(ST_)
 
 @assert U1 === 17126
 
-for id in 1:U3
+for nd in 1:U3
 
-    N_[id] = N_[id][indexin(ST_, ST__[id]), :]
+    N_[nd] = N_[nd][indexin(ST_, ST__[nd]), :]
 
 end
 

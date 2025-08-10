@@ -95,14 +95,14 @@ const PR = sum(isone, NU_) / U1
 
 const P = [Omics.LinearModel.make(GL_[i1], NU__[i1][i2])[1] for i1 in 1:U2, i2 in 1:U1]
 
-for id in Nucleus.Extreme.index(map(po_ -> Omics.Evidence.make(PR, po_), eachcol(P)), 4)
+for nd in Nucleus.Extreme.index(map(po_ -> Omics.Evidence.make(PR, po_), eachcol(P)), 4)
 
-    po_ = P[:, id]
+    po_ = P[:, nd]
 
     for um in 0:U2
 
         Omics.EvidencePlot.writ(
-            joinpath(Play.OU, "titanic.$id.$um.html"),
+            joinpath(Play.OU, "titanic.$nd.$um.html"),
             PR,
             S2_[1:um],
             po_[1:um],
