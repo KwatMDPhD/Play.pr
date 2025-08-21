@@ -11,11 +11,10 @@ using Play
 # ---- #
 
 # TODO: Avoid DataFrame
-const A =
-    Nucleus.Table.rea(pkgdir(Nucleus, "data", "Table", "_.tsv"); missingstring = "NA")[
-        !,
-        ["name", "survived", "sex", "age", "fare"],
-    ]
+const A = Nucleus.Table.rea(pkgdir(Nucleus, "da", "Table", "_.tsv"); missingstring = "NA")[
+    !,
+    ["name", "survived", "sex", "age", "fare"],
+]
 
 filter!(an_ -> all(!ismissing, an_), A)
 
